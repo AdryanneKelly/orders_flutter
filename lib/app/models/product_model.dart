@@ -51,7 +51,7 @@ class ProductModel {
       id: map['id'] as int,
       title: map['title'] as String,
       description: map['description'] as String,
-      price: map['price'] as double,
+      price: double.tryParse(map['price'].toString()) ?? 0.0,
       image: map['image'] as String,
       category: map['category'] as String,
     );
