@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orders_flutter/app/store/category_store.dart';
 import 'package:orders_flutter/app/store/product_store.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,9 +11,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   ProductStore productStore = ProductStore();
+  CategoryStore categoryStore = CategoryStore();
   @override
   void initState() {
     productStore.getProduct();
+    categoryStore.getCategories();
     super.initState();
   }
 
@@ -30,20 +33,36 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             const Divider(),
-            const SingleChildScrollView(
+            SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Chip(label: Text('Categoria 1')),
-                  SizedBox(width: 10),
-                  Chip(label: Text('Categoria 1')),
-                  SizedBox(width: 10),
-                  Chip(label: Text('Categoria 1')),
-                  SizedBox(width: 10),
-                  Chip(label: Text('Categoria 1')),
-                  SizedBox(width: 10),
-                  Chip(label: Text('Categoria 1')),
-                ],
+              child: ListenableBuilder(
+                listenable: categoryStore,
+                builder: (context, child) {
+                  return categoryStore.isLoading
+                      ? const Center(
+                          child: SizedBox(width: 100, height: 5, child: LinearProgressIndicator()),
+                        )
+                      : Row(
+                          children: categoryStore.categories
+                              .map((e) => GestureDetector(
+                                    onTap: () {
+                                      productStore.productByCategory(e);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Chip(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          side: BorderSide(
+                                              color: productStore.selectedCategory == e ? Colors.red : Colors.grey),
+                                        ),
+                                        label: Text(e),
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        );
+                },
               ),
             ),
             const SizedBox(height: 10),
@@ -63,8 +82,20 @@ class _HomePageState extends State<HomePage> {
                           shrinkWrap: true,
                           itemCount: productStore.products.length,
                           itemBuilder: (context, index) {
+                            final product = productStore.products[index];
                             return ListTile(
-                              title: Text(productStore.products[index].title),
+                              leading: Image(
+                                image: NetworkImage(product.image),
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return const CircularProgressIndicator();
+                                },
+                                height: 50,
+                                width: 50,
+                              ),
+                              title: Text(product.title),
                             );
                           },
                         );
