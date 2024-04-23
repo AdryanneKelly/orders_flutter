@@ -22,7 +22,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Row(
+          children: [
+            Icon(
+              Icons.shopping_bag_outlined,
+              color: Colors.red,
+              size: 35,
+            ),
+            SizedBox(width: 10),
+            Text(
+              'Flutter Shop',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            )
+          ],
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -30,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             const Text(
               'Faça seu pedido',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
             ),
             const Divider(),
             SingleChildScrollView(
@@ -55,10 +71,14 @@ class _HomePageState extends State<HomePage> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                         side: BorderSide(
+                                          width: 1.5,
                                           color: productStore.selectedCategory == e ? Colors.red : Colors.grey,
                                         ),
                                       ),
-                                      label: Text(e),
+                                      label: Text(
+                                        e,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -68,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             const Text(
               'Produtos',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -86,19 +106,36 @@ class _HomePageState extends State<HomePage> {
                           itemCount: productStore.products.length,
                           itemBuilder: (context, index) {
                             final product = productStore.products[index];
-                            return ListTile(
-                              leading: Image(
-                                image: NetworkImage(product.image),
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  }
-                                  return const CircularProgressIndicator();
-                                },
-                                height: 50,
-                                width: 50,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: ListTile(
+                                leading: Image(
+                                  image: NetworkImage(product.image),
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return const CircularProgressIndicator();
+                                  },
+                                  height: 70,
+                                  width: 70,
+                                ),
+                                title: Text(
+                                  product.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  product.description,
+                                  maxLines: 3,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
                               ),
-                              title: Text(product.title),
                             );
                           },
                         );
