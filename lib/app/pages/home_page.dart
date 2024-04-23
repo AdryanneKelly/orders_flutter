@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: ListenableBuilder(
-                listenable: categoryStore,
+                listenable: Listenable.merge([categoryStore, productStore]),
                 builder: (context, child) {
                   return categoryStore.isLoading
                       ? const Center(
@@ -44,22 +44,25 @@ class _HomePageState extends State<HomePage> {
                         )
                       : Row(
                           children: categoryStore.categories
-                              .map((e) => GestureDetector(
-                                    onTap: () {
-                                      productStore.productByCategory(e);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Chip(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          side: BorderSide(
-                                              color: productStore.selectedCategory == e ? Colors.red : Colors.grey),
+                              .map(
+                                (e) => GestureDetector(
+                                  onTap: () {
+                                    productStore.productByCategory(e);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Chip(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: BorderSide(
+                                          color: productStore.selectedCategory == e ? Colors.red : Colors.grey,
                                         ),
-                                        label: Text(e),
                                       ),
+                                      label: Text(e),
                                     ),
-                                  ))
+                                  ),
+                                ),
+                              )
                               .toList(),
                         );
                 },
